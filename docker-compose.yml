@@ -1,0 +1,47 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: my_mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27017:27017
+    volumes:
+      - './mongodb:/data/db'
+
+  nginx:
+    image: nginx:latest # Используемая версия NGINX
+    container_name: my_nginx
+    ports:
+      - "8000:80" # Проброс порта для доступа к NGINX
+    volumes:
+#      - ./nginx/conf.d:/etc/nginx/conf.d # Мапинг конфигурационных файлов NGINX
+      - ./app:/usr/share/nginx/html # Мапинг статических файлов
+#      - ./nginx/logs:/var/log/nginx # Мапинг логов
+
+  mysql:
+    image: mysql:8.0 # Используемая версия MySQL
+    container_name: mysql8
+    ports:
+      - "3306:3306" # Проброс порта для доступа к MySQL
+    environment:
+      MYSQL_ROOT_PASSWORD: root # Пароль администратора MySQL
+#      MYSQL_DATABASE: root # Название создаваемой базы данных
+#      MYSQL_USER: user # Пользователь базы данных
+#      MYSQL_PASSWORD: user_password # Пароль пользователя базы данных
+    volumes:
+      - ./mysql:/var/lib/mysql # Хранение данных MySQL
+
+  phpmyadmin:
+    image: phpmyadmin:latest # Используемая версия phpMyAdmin
+    container_name: phpmyadmin_container
+    ports:
+      - "8080:80" # Проброс порта для доступа к phpMyAdmin
+    environment:
+      PMA_HOST: mysql # Имя сервиса MySQL
+      PMA_USER: root # Пользователь для доступа к MySQL
+      PMA_PASSWORD: root # Пароль пользователя MySQL
+    links:
+      - mysql
